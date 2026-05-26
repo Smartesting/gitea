@@ -16,7 +16,9 @@ refresh_names() {
     fi
 
     CONTAINER_NAME="tester-env-gitea${suffix}"
-    IMAGE_NAME="tester-env-gitea${suffix}"
+    # IMAGE_TAG set by scripts/rl-env to a content-addressed tag so identical
+    # (baseline, patch-set) combos share an image. Manual invocations get :dev.
+    IMAGE_NAME="${IMAGE_TAG:-tester-env-gitea:dev}"
     DATA_VOLUME="tester-env-gitea-data${suffix}"
 }
 
