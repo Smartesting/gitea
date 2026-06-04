@@ -8,6 +8,9 @@ set -euo pipefail
 RUN_ID="default"
 PORT="3000"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TESTER_ENV_PROJECT="${TESTER_ENV_PROJECT:-tester-env}"
+TESTER_ENV_APP="${TESTER_ENV_APP:-gitea}"
+TESTER_ENV_SCENARIO="${TESTER_ENV_SCENARIO:-manual}"
 
 refresh_names() {
     local suffix=""
@@ -32,10 +35,25 @@ cmd_deploy() {
     fi
 
     echo "==> Building Docker image..."
-    docker build -t "${IMAGE_NAME}" "${SCRIPT_DIR}"
+    docker build \
+        --label "tester-env.project=${TESTER_ENV_PROJECT}" \
+        --label "tester-env.app=${TESTER_ENV_APP}" \
+        --label "tester-env.scenario=${TESTER_ENV_SCENARIO}" \
+        -t "${IMAGE_NAME}" \
+        "${SCRIPT_DIR}"
 
     echo "==> Starting container on port ${PORT}..."
+    docker volume create \
+        --label "tester-env.project=${TESTER_ENV_PROJECT}" \
+        --label "tester-env.app=${TESTER_ENV_APP}" \
+        --label "tester-env.scenario=${TESTER_ENV_SCENARIO}" \
+        --label "tester-env.run_id=${TESTER_ENV_RUN_ID:-${RUN_ID}}" \
+        "${DATA_VOLUME}" >/dev/null
     docker run -d --name "${CONTAINER_NAME}" \
+        --label "tester-env.project=${TESTER_ENV_PROJECT}" \
+        --label "tester-env.app=${TESTER_ENV_APP}" \
+        --label "tester-env.scenario=${TESTER_ENV_SCENARIO}" \
+        --label "tester-env.run_id=${TESTER_ENV_RUN_ID:-${RUN_ID}}" \
         -p "${PORT}:3000" \
         -v "${DATA_VOLUME}:/data" \
         -e "GITEA__security__SECRET_KEY=tester-env-secret-key-2026" \
