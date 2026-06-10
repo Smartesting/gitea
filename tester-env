@@ -59,7 +59,7 @@ cmd_deploy() {
         -e "GITEA__security__SECRET_KEY=tester-env-secret-key-2026" \
         -e "GITEA__security__INTERNAL_TOKEN=tester-env-internal-token-2026" \
         -e "GITEA__server__DISABLE_SSH=true" \
-        -e "GITEA__server__INSTALL_LOCK=true" \
+        -e "GITEA__security__INSTALL_LOCK=true" \
         -e "GITEA__server__DOMAIN=localhost" \
         -e "GITEA__server__SSH_DOMAIN=localhost" \
         -e "GITEA__server__ROOT_URL=http://localhost:3000" \
